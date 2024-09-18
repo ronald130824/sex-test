@@ -13,8 +13,6 @@ export const getAcessorios = () => api.get<SnackData[]>('/coisado?name_icon=aces
 export const getCosmeticos = () => api.get<SnackData[]>('/coisado?name_icon=cosmeticos')
 export const getBrincadeiras = () => api.get<SnackData[]>('/coisado?name_icon=brincadeiras')
 export const processCheckout = (cart: Snack[], customer: CustomerData) => {
-  console.log(cart, customer);
-  
   // Verifica se o método de pagamento é "CREDIT_CARD"
   const paymentData = customer.method === 'CREDIT_CARD' 
     ? {

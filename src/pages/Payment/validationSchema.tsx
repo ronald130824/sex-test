@@ -34,24 +34,16 @@ export const schema = yup
     neighborhood: yup.string().required('O bairro é obrigatório.'),
     city: yup.string().required('A cidade é obrigatória.'),
     state: yup.string().required('O estado é obrigatório.'),
-    method: yup.string(),
+    method: yup.string().required("Selecione o metodo de pagamento"),
     creditCardNumber: yup
       .string()
-      .required('O número do cartão é obrigatório.')
-      .transform((val) => val.replace(/[^\d]+/g, ''))
-      .test(
-        'validateCreditCardNumber',
-        'O número do cartão é inválido.',
-        (value) => isValidCreditCard.number(value).isValid,
-      ),
+      .transform((val) => val.replace(/[^\d]+/g, '')),
     creditCardHolder: yup
       .string()
-      .required('O nome do titular é obrigatório.')
       .min(3, 'O nome do titular deve ser completo.')
       .matches(/(\w.+\s).+/gi, 'O nome do titular deve conter o sobrenome.'),
     creditCardExpiration: yup
       .string()
-      .required('A data de validate é obrigatória.')
       .transform((value) => {
         const [month, year] = value.split('/')
 
@@ -59,19 +51,12 @@ export const schema = yup
           return new Date(+`20${year}`, +month - 1, 1).toISOString()
 
         return value
-      })
-      .test(
-        'validateCreditCardExpiration',
-        'A data de validate é inválida.',
-        (value) => new Date(value) >= new Date(),
-      ),
+      }),
     creditCardSecurityCode: yup
       .string()
-      .required('O CVV é obrigatório.')
       .transform((value) => value.replace(/[^\d]+/g, ''))
       .min(3, 'O CVV deve possuir entre 3 e 4 dígitos.')
       .max(4, 'O CVV deve possuir entre 3 e 4 dígitos.'),
   })
-  .required()
 
 export type FieldValues = yup.InferType<typeof schema>

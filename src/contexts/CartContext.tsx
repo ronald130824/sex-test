@@ -122,14 +122,13 @@ export function CartProvider({ children }: CartProviderProps) {
   }
 
   async function payOrder(customer: CustomerData) {
-    console.log(customer);
-    
 
     try {
       const response = await processCheckout(cart, customer)
-      if(response.data.status !== "CONFIRMED") {
-        toast.error('erro ao processar o pedido')
-        return
+      const validStatuses = ["CONFIRMED", "PAID", "PENDING", "RECEIVED"];
+      if (!validStatuses.includes(response.data.status)) {
+        toast.error('Erro ao processar o pedido');
+        return;
       }
       toast.success('Pagamento realizado com sucesso')
       clearCart() // deve ser executado após retorno positivo da API
