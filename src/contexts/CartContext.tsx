@@ -130,8 +130,9 @@ export function CartProvider({ children }: CartProviderProps) {
         toast.error('Erro ao processar o pedido');
         return;
       }
-      toast.success('Pagamento realizado com sucesso')
+
       clearCart() // deve ser executado após retorno positivo da API
+      navigate(`/order/success/${response.data.id}`)
     } catch (error) {
       console.error(error);
       toast.error('erro ao processar o pedido')
