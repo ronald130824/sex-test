@@ -6,8 +6,6 @@ import { Container, Inner, SubTitle, Title } from './style'
 
 export default function OrderSuccessPage() {
   const { orderId } = useParams()
-  console.log(orderId);
-  
 
   return (
     <Container>

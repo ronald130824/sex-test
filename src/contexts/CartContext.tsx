@@ -20,7 +20,7 @@ interface CartContextProps {
   snackCartIncrement: (snack: Snack) => void
   snackCartDecrement: (snack: Snack) => void
   confirmOrder: () => void
-  payOrder: (customer: CustomerData) => void
+  payOrder: (customer: CustomerData) => any
 }
 
 interface CartProviderProps {
@@ -123,6 +123,8 @@ export function CartProvider({ children }: CartProviderProps) {
 
   async function payOrder(customer: CustomerData) {
 
+    
+
     try {
       const response = await processCheckout(cart, customer)
       const validStatuses = ["CONFIRMED", "PAID", "PENDING", "RECEIVED"];
@@ -130,7 +132,10 @@ export function CartProvider({ children }: CartProviderProps) {
         toast.error('Erro ao processar o pedido');
         return;
       }
-
+      if(customer.method == "PIX") {
+        clearCart() // deve ser executado após retorno positivo da API
+        return response
+      }
       clearCart() // deve ser executado após retorno positivo da API
       navigate(`/order/success/${response.data.id}`)
     } catch (error) {

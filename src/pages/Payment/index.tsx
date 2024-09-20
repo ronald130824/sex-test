@@ -15,10 +15,17 @@ import { FieldValues, schema } from './validationSchema'
 import IMask from 'imask'
 import { Container, Form, Inner } from './styles'
 import { useState } from 'react'
+import PaymentModal from './paymentModal'
 
 export default function Payment() {
   const { payOrder } = useCart()
   const [payment, setPayment] = useState("")
+  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentData, setPaymentData] = useState({
+    qrCodeBase64: '',
+    qrCodePayload: '',
+    expiration: '',
+  });
 
   const {
     control,
@@ -28,13 +35,35 @@ export default function Payment() {
   } = useForm<FieldValues>({
     resolver: yupResolver(schema)
   })
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    payOrder(data as CustomerData)
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const response = await payOrder(data as CustomerData)
+    if(response?.data?.qrCode) {
+      setModalOpen(true)
+      setPaymentData({
+        qrCodeBase64: response.data.qrCode,  // O QR Code em base64
+        qrCodePayload: response.data.payload,  // O código Pix (copia e cola)
+        expiration: response.data.expiration,        // A data de expiração
+      });
+    }
   } 
+  const modalPayment = () => {
+    if(modalOpen) {
+      return (
+        <PaymentModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          qrCodeBase64={paymentData.qrCodeBase64}
+          qrCodePayload={paymentData.qrCodePayload}
+          expiration={paymentData.expiration}
+        />
+      )
+    }
+  }
   
 
   return (
     <Container>
+      {modalPayment()}
       <Head title='Pagamento' />
       <OrderHeader />
       <Inner>
